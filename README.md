@@ -1,59 +1,490 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel 12 Production-Ready Backend API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A fully modular, action-based Laravel 12 backend API with advanced authentication, RBAC, UUID primary keys, soft deletes, audit logging, real-time capabilities, and comprehensive search functionality.
 
-## About Laravel
+## Quick Start
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+```bash
+# Install dependencies
+composer install
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+# Configure .env
+cp .env.example .env
+php artisan key:generate
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+# Setup database
+php artisan migrate
+php artisan passport:install
+php artisan db:seed
 
-## Learning Laravel
+# Run app
+php artisan serve
+# Or use Laravel Herd: https://laravel-starter.test
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+# Optional: Start Reverb for WebSockets
+php artisan reverb:start
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+# Optional: Index models for search
+php artisan scout:import "Modules\User\Models\User"
+```
 
-## Laravel Sponsors
+## Features
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Core Architecture
+- ✅ Modular architecture with separate User, Role, and Auth modules
+- ✅ Action-based business logic (thin controllers)
+- ✅ Specialized service providers (Observer, Gate, Auth)
+- ✅ UUID primary keys and soft deletes by default
+- ✅ Comprehensive PHPDoc blocks on all classes and methods
 
-### Premium Partners
+### Authentication & Authorization
+- ✅ Separate Auth module with specialized controllers
+- ✅ JWT authentication with Laravel Passport
+- ✅ Configurable token expiration (15 min access, 1 day refresh)
+- ✅ Automatic token refresh middleware for seamless auth
+- ✅ Refresh token endpoint for manual token renewal
+- ✅ RBAC via spatie/laravel-permission
+- ✅ Authorization policies for fine-grained access control
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Data & Logging
+- ✅ Audit logging via spatie/laravel-activitylog
+- ✅ Activity tracking for all model changes
+- ✅ Event-driven architecture with observers
+- ✅ Queued notifications for async processing
+- ✅ Attribute masking in logs for sensitive data
 
-## Contributing
+### Search & Indexing
+- ✅ Full-text search via Laravel Scout + Meilisearch
+- ✅ Indexed User model for fast searching
+- ✅ Configurable search fields and data types
+- ✅ Support for typo tolerance and relevancy
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Real-Time Features
+- ✅ WebSocket support via Laravel Reverb
+- ✅ Event broadcasting ready
+- ✅ Real-time channel subscriptions
+- ✅ Production-ready scaling configuration
 
-## Code of Conduct
+### Code Quality
+- ✅ Strict typing (declare strict_types=1) on all files
+- ✅ PSR-12 compliance with Laravel Pint
+- ✅ Rate limiting and throttling
+- ✅ Global exception handler for API
+- ✅ Comprehensive PestPHP test suite
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Developer Experience
+- ✅ Comprehensive documentation and setup guide
+- ✅ Laravel Telescope for local debugging (dev only)
 
-## Security Vulnerabilities
+## API Endpoints
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Authentication
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | `/api/auth/register` | Register new user | No |
+| POST | `/api/auth/login` | Login and get token | No |
+| POST | `/api/auth/logout` | Logout all devices | Yes |
+| POST | `/api/auth/refresh` | Refresh access token | Yes |
+| GET | `/api/me` | Get authenticated user | Yes |
 
-## License
+### Users (CRUD)
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/api/users` | List all users (paginated) | Yes |
+| POST | `/api/users` | Create new user | Yes |
+| GET | `/api/users/{id}` | Get specific user | Yes |
+| PUT | `/api/users/{id}` | Update user | Yes |
+| DELETE | `/api/users/{id}` | Delete user | Yes |
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Roles (CRUD)
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/api/roles` | List roles | Yes |
+| POST | `/api/roles` | Create role with permissions | Yes |
+| GET | `/api/roles/{id}` | Get role details | Yes |
+| PUT | `/api/roles/{id}` | Update role | Yes |
+| DELETE | `/api/roles/{id}` | Delete role | Yes |
+
+## Authentication Flow
+
+### Token Expiration & Refresh
+
+The authentication system uses a refreshable token model:
+
+1. **Access Token**: 15 minutes (short-lived)
+2. **Refresh Token**: 1 day (long-lived)
+3. **Personal Access Tokens**: 6 months (for daemon access)
+
+```
+┌─ User Login ─────────────────────────────────────────┐
+│                                                      │
+│  POST /api/auth/login                               │
+│  Returns: access_token, refresh_token, expires_in   │
+│                                                      │
+└──────────────────────────────────────────────────────┘
+                          │
+                          v
+┌─ Client stores tokens ─────────────────────────────────┐
+│                                                        │
+│  - Access token in memory (or secure storage)          │
+│  - Refresh token in httpOnly cookie or secure storage  │
+│                                                        │
+└────────────────────────────────────────────────────────┘
+                          │
+                          v
+┌─ Access Token Expires ─────────────────────────────────┐
+│                                                        │
+│  Middleware detects expired token                      │
+│  Automatically refreshes using refresh token           │
+│  New token in X-New-Access-Token header                │
+│                                                        │
+└────────────────────────────────────────────────────────┘
+```
+
+### Manual Token Refresh
+
+```bash
+curl -X POST http://localhost:8000/api/auth/refresh \
+  -H "Authorization: Bearer {access_token}"
+  
+# Returns: { access_token, token_type, expires_in }
+```
+
+## Project Structure
+
+```
+app/
+├── Modules/
+│   ├── Auth/
+│   │   ├── Actions/{Login,Register,Logout,RefreshToken}Action.php
+│   │   ├── Http/Controllers/AuthController.php
+│   │   ├── Http/Middleware/EnsureTokenNotExpired.php
+│   │   └── Http/Requests/{Login,Register}Request.php
+│   ├── User/
+│   │   ├── Actions/{CreateUser,UpdateUser,DeleteUser,CreateRole,UpdateRole,DeleteRole}Action.php
+│   │   ├── Events/{UserRegistered}Event.php
+│   │   ├── Http/Controllers/{User,Role}Controller.php
+│   │   └── Http/Requests/{CreateUser,UpdateUser,CreateRole,UpdateRole}Request.php
+│   │   └── Http/Resources/{Role,User}Collection.php
+│   │   └── Http/Resources/{Role,User}Resource.php
+│   │   └── Models/{Role,User}.php
+│   │   └── Notifications/WelcomeEmail.php
+│   │   └── Observers/{User}Observer.php
+│   │   └── Policies/{Role,User}Policy.php
+├── Providers/
+│   ├── AppServiceProvider.php
+│   ├── AuthServiceProvider.php (Passport config)
+│   └── GateServiceProvider.php
+│   ├── ObserverServiceProvider.php
+│   ├── RepositoryServiceProvider.php
+│   ├── TelescopeServiceProvider.php
+└── Shared/
+    ├── Contracts/{RepositoryInterface,BaseRepository}.php
+    └── Traits/HasUuid.php
+
+config/
+├── scout.php (Meilisearch configuration)
+├── reverb.php (WebSocket configuration)
+└── auth.php, broadcasting.php, ...
+
+database/
+├── factories/ (Model factories)
+├── seeders/ (Database seeders)
+└── migrations/ (Schema migrations)
+```
+
+## Search Integration (Meilisearch)
+
+### Setup
+
+```bash
+# Install Meilisearch (Docker)
+docker run -it --rm -p 7700:7700 getmeili/meilisearch:latest
+
+# Configure .env
+SCOUT_DRIVER=meilisearch
+MEILISEARCH_HOST=http://127.0.0.1:7700
+MEILISEARCH_KEY=masterKey
+```
+
+### Index Models
+
+```bash
+# Index all users
+php artisan scout:import "Modules\User\Models\User"
+
+# Flush index
+php artisan scout:flush "Modules\User\Models\User"
+
+# Search
+GET /api/users/search?q=admin
+```
+
+### Adding Search to New Modules
+
+1. Add `Searchable` trait to model
+2. Implement `toSearchableArray()` method
+3. Run `php artisan scout:import`
+
+```php
+use Laravel\Scout\Searchable;
+
+class Product extends Model
+{
+    use Searchable;
+
+    public function toSearchableArray(): array
+    {
+        return [
+            'id' => (int) $this->id,
+            'name' => $this->name,
+            'description' => $this->description,
+        ];
+    }
+}
+```
+
+## Real-Time Features (Reverb)
+
+### Setup WebSockets
+
+```bash
+# Start Reverb server
+php artisan reverb:start --host=0.0.0.0 --port=8080
+
+# Or with scaling (Redis required)
+REVERB_SCALING_ENABLED=true php artisan reverb:start
+```
+
+### Configure Environment
+
+```env
+# .env
+BROADCAST_DRIVER=reverb
+REVERB_HOST=127.0.0.1
+REVERB_PORT=8080
+REVERB_SCHEME=http
+REVERB_APP_ID=your-app-id
+REVERB_APP_KEY=your-app-key
+REVERB_APP_SECRET=your-app-secret
+```
+
+### Frontend Integration
+
+```javascript
+// resources/js/bootstrap.js
+import Echo from 'laravel-echo';
+import Pusher from 'pusher-js';
+
+window.Pusher = Pusher;
+
+window.Echo = new Echo({
+    broadcaster: 'reverb',
+    key: import.meta.env.VITE_REVERB_APP_KEY,
+    wsHost: import.meta.env.VITE_REVERB_HOST,
+    wsPort: import.meta.env.VITE_REVERB_PORT ?? 80,
+    forceTLS: (import.meta.env.VITE_REVERB_SCHEME ?? 'https') === 'https',
+    enabledTransports: ['ws', 'wss'],
+});
+
+// Subscribe to channel
+window.Echo.channel('posts')
+    .listen('.post.created', (data) => {
+        console.log('New post:', data);
+    });
+```
+
+### Broadcasting Events
+
+```php
+use Illuminate\Broadcasting\Channel;
+use Illuminate\Broadcasting\ShouldBroadcast;
+
+class PostCreated implements ShouldBroadcast
+{
+    public function broadcastOn(): Channel
+    {
+        return new Channel('posts');
+    }
+
+    public function broadcastAs(): string
+    {
+        return 'post.created';
+    }
+}
+```
+
+## Service Providers
+
+The application has specialized service providers for better organization:
+
+### AuthServiceProvider
+Configures Passport token expiration times:
+- Access tokens: 15 minutes
+- Refresh tokens: 1 day
+- Personal access tokens: 6 months
+
+### RepositoryServiceProvider
+Registers all repository bindings in the service container for dependency injection.
+
+### ObserverServiceProvider
+Registers model observers that handle lifecycle events and trigger business logic.
+
+### GateServiceProvider
+Registers authorization policies for resource protection.
+
+### AppServiceProvider
+General application configuration (HTTPS in production, etc.)
+
+## Middleware
+
+### EnsureTokenNotExpired
+
+Automatically refreshes expired access tokens:
+- Checks if token is expired
+- Generates new token if refresh token is valid
+- Returns new token in `X-New-Access-Token` header
+
+```php
+Route::middleware(['auth:api', 'ensure.token.not.expired'])->group(function () {
+    // Protected routes
+});
+```
+
+## Token Configuration
+
+Update token expiration in `app/Providers/AuthServiceProvider.php`:
+
+```php
+use Carbon\CarbonInterval;
+
+Passport::tokensExpireIn(CarbonInterval::minutes(15));
+Passport::refreshTokensExpireIn(CarbonInterval::days(1));
+Passport::personalAccessTokensExpireIn(CarbonInterval::months(6));
+```
+
+## Testing
+
+```bash
+# Run all tests
+php artisan test
+
+# Run specific test
+php artisan test tests/Feature/UserApiTest.php
+
+# With coverage
+php artisan test --coverage
+
+# Filter by name
+php artisan test --filter=test_can_register
+
+# Compact output
+php artisan test --compact
+```
+
+## Code Quality
+
+```bash
+# Check PSR-12 compliance
+vendor/bin/pint --test
+
+# Fix code style
+vendor/bin/pint
+
+# Fix specific file
+vendor/bin/pint app/Modules/User/Models/User.php
+```
+
+## Security
+
+- ✅ JWT authentication with Passport
+- ✅ Automatic token refresh for seamless auth
+- ✅ Authorization policies for fine-grained access control
+- ✅ HTTPS enforced in production
+- ✅ Rate limiting on all API endpoints
+- ✅ Request validation with custom error messages
+- ✅ Audit trails for all model changes
+- ✅ Soft deletes for data recovery
+- ✅ Password hashing with bcrypt
+- ✅ Masked attributes in logs (email, phone)
+- ✅ CORS configuration for frontend domains
+
+## Database Models
+
+**User**
+- UUID PK, soft deletes, has many roles/posts, Passport tokens, audit logging, activity logging
+
+**Role**
+- UUID PK, soft deletes, many-to-many with users, many-to-many with permissions, audit logging
+
+## Configuration
+
+Key environment variables:
+
+```env
+APP_ENV=production
+APP_DEBUG=false
+DB_CONNECTION=mysql
+CACHE_DRIVER=redis
+QUEUE_CONNECTION=database
+MAIL_DRIVER=mailtrap
+
+# Passport (JWT)
+PASSPORT_PERSONAL_ACCESS_CLIENT_ENABLED=true
+
+# Search (Meilisearch)
+SCOUT_DRIVER=meilisearch
+MEILISEARCH_HOST=http://127.0.0.1:7700
+MEILISEARCH_KEY=masterKey
+
+# Broadcasting (Reverb)
+BROADCAST_DRIVER=reverb
+REVERB_HOST=127.0.0.1
+REVERB_PORT=8080
+```
+
+## Production Deployment
+
+- [ ] Set APP_DEBUG=false, APP_ENV=production
+- [ ] Run `composer install --no-dev`
+- [ ] Run `php artisan config:cache`
+- [ ] Run `php artisan route:cache`
+- [ ] Enable HTTPS
+- [ ] Configure CORS
+- [ ] Set strong APP_KEY
+- [ ] Configure mail/queue
+- [ ] Setup Meilisearch server
+- [ ] Configure Reverb horizontal scaling with Redis
+- [ ] Run `php artisan migrate`
+- [ ] Run `php artisan passport:install`
+- [ ] Index models: `php artisan scout:import "Modules\User\Models\User"`
+
+## Tools & Packages
+
+| Package | Purpose | Version |
+|---------|---------|---------|
+| laravel/framework | Core framework | v12 |
+| laravel/passport | JWT authentication | v13 |
+| laravel/scout | Full-text search | v10 |
+| laravel/reverb | WebSocket server | v1 |
+| spatie/laravel-permission | RBAC | v7 |
+| spatie/laravel-activitylog | Audit logging | v4 |
+| laravel/telescope | Dev debugging | v5 |
+| meilisearch/meilisearch-php | Search engine | Latest |
+| pestphp/pest | Testing framework | v4 |
+| laravel/pint | Code formatting | v1 |
+
+## Support
+
+For issues or questions:
+1. Check the documentation in README.md or SETUP_GUIDE.md
+2. Review existing tests for implementation examples
+3. Consult Laravel documentation for framework specifics
+4. Check package documentation for third-party tools
+
+---
+
+**Last Updated:** February 23, 2026  
+**Laravel Version:** v12.50.0  
+**PHP Version:** 8.4.16
+
